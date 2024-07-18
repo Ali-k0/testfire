@@ -1,0 +1,41 @@
+﻿@page "/fetch-items"
+@inject HttpClient Http
+@using BlazorApp.Shared
+
+@code {
+    private List<Item> items = new List<Item>();
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            items = await Http.GetFromJsonAsync<List<Item>>("api/items");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching items: {ex.Message}");
+        }
+        isLoading = false;
+    }
+}
+
+<h3>Items</h3>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (items.Count == 0)
+{
+    <p>No items found.</p>
+}
+else
+{
+    <ul>
+        @foreach (var item in items)
+        {
+            <li>@item.Name</li>
+        }
+    </ul>
+}
